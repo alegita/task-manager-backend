@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -14,15 +14,26 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
+#CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow React frontend
 
-# Debugging: Print config values to confirm it's set
-print("Final DATABASE URI in Flask config:", app.config.get("SQLALCHEMY_DATABASE_URI"))
+CORS(app, origins="http://localhost:5173", methods=["GET", "POST", "OPTIONS"], allow_headers=["Authorization", "Content-Type"], supports_credentials=True)
+
+@app.before_request
+def handle_preflight():
+    """Handle CORS preflight requests (OPTIONS) manually."""
+    if request.method == "OPTIONS":
+        response = jsonify({"message": "CORS preflight successful"})
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+        response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
 
 # Initialize extensions
 db.init_app(app)
 bcrypt.init_app(app)
 jwt = JWTManager(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow React frontend
+
 
 # Register Flask-Migrate
 migrate = Migrate(app, db)
