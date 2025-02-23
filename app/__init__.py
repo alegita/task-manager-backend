@@ -35,7 +35,7 @@ def create_app():
 
     # Register Blueprints
     app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(task_routes, url_prefix="/tasks")
+    app.register_blueprint(task_routes, url_prefix="/api")
 
     @app.route('/')
     def home():

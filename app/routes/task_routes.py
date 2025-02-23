@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 task_routes = Blueprint("tasks", __name__)
 
-@task_routes.route("/", methods=["POST"])
+@task_routes.route("/tasks", methods=["POST"])
 @jwt_required()
 def add_task():
     user_id = get_jwt_identity()
@@ -28,7 +28,7 @@ def add_task():
     return jsonify(new_task.to_dict()), 201
 
 
-@task_routes.route('/tasks', methods=['GET'])
+@task_routes.route("/tasks", methods=["GET"])
 @jwt_required()
 def get_tasks():
     user_id = get_jwt_identity()

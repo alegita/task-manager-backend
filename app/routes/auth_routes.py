@@ -34,7 +34,7 @@ def login():
     if not user or not user.check_password(data["password"]):
         return jsonify({"error": "Invalid username or password"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=str(user.id))
     return jsonify({"access_token": access_token}), 200
 
 
@@ -51,6 +51,6 @@ def debug_token():
     try:
         verify_jwt_in_request()
         identity = get_jwt_identity()
-        return jsonify({"user_id": identity, "message": "Token is valid!"}), 200
+        return jsonify({"user_id": str(identity), "message": "Token is valid!"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
