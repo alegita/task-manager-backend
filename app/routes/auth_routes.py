@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from app.models.models import db, User
+from flask_jwt_extended import create_access_token, verify_jwt_in_request, jwt_required, get_jwt_identity
+from app.models.user import User
+from app.models import db
 from flask_cors import CORS
 
 
@@ -42,3 +43,14 @@ def login():
 def protected():
     current_user_id = get_jwt_identity()
     return jsonify({"message": f"Access granted to user {current_user_id}"}), 200
+
+
+@auth_bp.route("/debug_token", methods=["GET"])
+@jwt_required()
+def debug_token():
+    try:
+        verify_jwt_in_request()
+        identity = get_jwt_identity()
+        return jsonify({"user_id": identity, "message": "Token is valid!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

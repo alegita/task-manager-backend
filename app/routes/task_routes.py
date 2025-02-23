@@ -1,23 +1,24 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from models.task import Task
-from models.user import User
+from app.models.task import Task
+from app.models.user import User
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-task_routes = Blueprint('task_routes', __name__)
+task_routes = Blueprint("tasks", __name__)
 
-@task_routes.route('/tasks', methods=['POST'])
+@task_routes.route("/", methods=["POST"])
 @jwt_required()
-def create_task():
-    data = request.get_json()
+def add_task():
     user_id = get_jwt_identity()
+    data = request.get_json()
+
+    if not data or "title" not in data:
+        return jsonify({"error": "Title is required"}), 400
 
     new_task = Task(
-        title=data['title'],
-        description=data.get('description', ''),
+        title=data["title"],
+        description=data.get("description", ""),
         completed=False,
-        due_date=data.get('due_date'),
-        priority=data.get('priority', 'medium'),
         user_id=user_id
     )
 
@@ -25,6 +26,7 @@ def create_task():
     db.session.commit()
 
     return jsonify(new_task.to_dict()), 201
+
 
 @task_routes.route('/tasks', methods=['GET'])
 @jwt_required()
