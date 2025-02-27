@@ -2,11 +2,10 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, verify_jwt_in_request, jwt_required, get_jwt_identity
 from app.models.user import User
 from app.models import db
-from flask_cors import CORS
 
 
 auth_bp = Blueprint("auth", __name__)
-CORS(auth_bp, origins="http://localhost:5173", methods=["GET", "POST", "OPTIONS"], allow_headers=["Authorization", "Content-Type"], supports_credentials=True)
+
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
@@ -26,7 +25,7 @@ def register():
     return jsonify({"message": "User registered successfully"}), 201
 
 
-@auth_bp.route("/login", methods=["OPTIONS", "POST"])
+@auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.json
     user = User.query.filter_by(email=data["email"]).first()

@@ -32,7 +32,7 @@ def create_app():
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
      allow_headers=["Authorization", "Content-Type"], 
      supports_credentials=True)
-
+    
     # Register Blueprints
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(task_routes, url_prefix="/api")
